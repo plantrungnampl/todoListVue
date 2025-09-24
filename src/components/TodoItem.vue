@@ -1,58 +1,78 @@
   <template>
-  <div
-    class="todo-item"
-    :class="{
-      'todo-item--completed': todo.completed,
-      'todo-item--editing': isEditing
-    }"
-  >
+    <div
+      class="todo-item"
+      :class="{
+        'todo-item--completed': todo.completed,
+        'todo-item--editing': isEditing
+      }"
+    >
     <van-swipe-cell
       v-if="!isEditing"
       :right-width="80"
       :before-close="beforeClose"
     >
       <!-- Main todo content -->
-      <div class="todo-content" @click="handleToggle">
+      <div class="todo-content">
         <van-checkbox
           :model-value="todo.completed"
+
           :disabled="isLoading"
           @click.stop="handleToggle"
         />
-
-        <div class="todo-text-section" @dblclick="startEditing">
+ 
+        <div class="todo-text-section" @click="handleToggle" @dblclick="startEditing">
           <div class="todo-text" :class="{ 'completed': todo.completed }">
             {{ todo.text }}
           </div>
           <div class="todo-meta">
             <span class="todo-date">{{ formattedDate }}</span>
             <span v-if="todo.priority && todo.priority !== 'medium'" class="todo-priority">
-              {{ priorityText }}
+              {{ priorityText }} 
             </span>
           </div>
         </div>
 
-        <van-button
-          v-if="!isLoading"
-          type="default"
-          size="mini"
-          icon="edit"
-          @click.stop="startEditing"
-        />
+        <div class="desktop-actions">
+          <van-button
+            v-if="!isLoading"
+            type="default"
+            size="mini"
+            icon="edit"
+            @click.stop="startEditing"
+          />
+          <van-button
+            v-if="!isLoading"
+            type="danger"
+            size="mini"
+            icon="delete-o"
+            class="desktop-delete-btn"
+            @click.stop="handleDelete"
+          />
+        </div>
       </div>
-
-      <!-- Swipe action: Delete -->
       <template #right>
         <van-button
           type="danger"
+          size="mini"
           class="delete-button"
           :loading="isDeleting"
           @click="handleDelete"
+          icon="delete-o"
         >
           Xóa
         </van-button>
+        <van-button
+            v-if="!isLoading"
+            type="default"
+            size="mini"
+            icon="edit"
+            text="edit"
+            @click.stop="startEditing"
+          />
       </template>
+      
     </van-swipe-cell>
-
+  
     <!-- Edit mode -->
     <div v-else class="todo-edit">
       <van-field
@@ -85,7 +105,6 @@
         </van-button>
       </div>
     </div>
-
     <!-- Loading overlay -->
     <van-loading
       v-if="isLoading"
@@ -160,7 +179,6 @@ const canSave = computed(() => {
          !isSaving.value
 })
 
-// Watch for prop changes
 watch(() => props.todo.text, (newText) => {
   if (!isEditing.value) {
     editText.value = newText
@@ -180,12 +198,12 @@ function validateEdit(text) {
   return true
 }
 
-async function handleToggle() {
+function handleToggle() {
   if (props.disabled || isLoading.value || isEditing.value) return
 
   try {
     isLoading.value = true
-    await emit('toggle', props.todo.id)
+    emit('toggle', props.todo.id)
   } catch (error) {
     console.error('Error toggling todo:', error)
   } finally {
@@ -193,12 +211,12 @@ async function handleToggle() {
   }
 }
 
-async function handleDelete() {
+function handleDelete() {
   if (props.disabled || isDeleting.value) return
 
   try {
     isDeleting.value = true
-    await emit('delete', props.todo.id, props.todo)
+    emit('delete', props.todo.id, props.todo)
   } catch (error) {
     console.error('Error deleting todo:', error)
   } finally {
@@ -224,7 +242,7 @@ async function startEditing() {
   }
 }
 
-async function saveEdit() {
+function saveEdit() {
   if (!canSave.value) return
 
   const trimmedText = editText.value.trim()
@@ -235,7 +253,7 @@ async function saveEdit() {
 
   try {
     isSaving.value = true
-    await emit('update', props.todo.id, { text: trimmedText })
+    emit('update', props.todo.id, { text: trimmedText })
     isEditing.value = false
     emit('edit-end', props.todo.id)
   } catch (error) {
@@ -255,9 +273,8 @@ function cancelEdit() {
 
 function beforeClose({ position, instance }) {
   if (position === 'right') {
-    // Handle delete action
     handleDelete()
-    return false // Prevent automatic close
+    return false 
   }
   return true
 }
@@ -278,13 +295,22 @@ defineExpose({
   transition: all 0.3s ease;
 }
 
-.todo-item:hover {
-  background-color: #f7f8fa;
+/* Desktop hover effects */
+.desktop-actions {
+  gap: 8px;
+  transition: opacity 0.2s ease;
+}
+
+.desktop-delete-btn {
+  background-color: #ff4d4f !important;
+  border-color: #ff4d4f !important;
+  color: white !important;
 }
 
 .todo-item--completed {
   opacity: 0.6;
 }
+
 
 .todo-item--editing {
   background-color: #f0f9ff;
@@ -297,6 +323,7 @@ defineExpose({
   gap: 12px;
   cursor: pointer;
   user-select: none;
+  touch-action: auto;
 }
 
 .todo-text-section {
@@ -353,6 +380,8 @@ defineExpose({
   height: 100%;
   width: 80px;
   border-radius: 0;
+  background-color: #1989fa;
+  
 }
 
 .loading-overlay {
@@ -395,6 +424,23 @@ defineExpose({
 
   .edit-actions .van-button {
     flex: 1;
+  }
+
+  /* Hide desktop actions on mobile, use swipe instead */
+  .desktop-actions {
+    display: none !important;
+  }
+}
+
+/* Desktop optimizations */
+@media (min-width: 769px) {
+  .desktop-actions {
+    display: flex;
+    opacity: 0;
+  }
+
+  .todo-item:hover .desktop-actions {
+    opacity: 1;
   }
 }
 

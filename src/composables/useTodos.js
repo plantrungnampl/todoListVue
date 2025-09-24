@@ -14,6 +14,7 @@ export function useTodos() {
   const hasCompleted = computed(() => store.hasCompleted)
   const allCompleted = computed(() => store.allCompleted)
   const currentFilter = computed(() => store.currentFilter)
+  const searchQuery = computed(() => store.searchQuery)
   const isLoading = computed(() => store.isLoading)
   const error = computed(() => store.error)
 
@@ -97,14 +98,22 @@ export function useTodos() {
         return false
       }
     } catch {
-      // User cancelled
       return false
     }
   }
 
+
+  /**
+   * search todos by text
+
+   */
+  async function searchTodos(query) {
+    const result = store.searchTodos(query)
+    return result
+  }
+
   /**
    * Toggle todo completion status
-
    */
   async function toggleTodo(id) {
     const result = store.toggleTodo(id)
@@ -290,6 +299,7 @@ export function useTodos() {
     hasCompleted,
     allCompleted,
     currentFilter,
+    searchQuery,
     isLoading,
     error,
 
@@ -303,6 +313,7 @@ export function useTodos() {
     setFilter,
     clearAllTodos,
     importTodos,
-    clearError
+    clearError,
+    searchTodos
   }
 }

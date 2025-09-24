@@ -107,12 +107,11 @@ function handleInput(value) {
   emit('input', value)
 }
 
-async function handleSubmit() {
+ function handleSubmit() {
   if (!canSubmit.value) return
 
   const trimmedText = inputText.value.trim()
 
-  // Validate before submitting
   if (!validateInput(trimmedText)) {
     return
   }
@@ -120,10 +119,8 @@ async function handleSubmit() {
   try {
     isSubmitting.value = true
 
-    // Emit submit event
-    await emit('submit', trimmedText)
+     emit('submit', trimmedText)
 
-    // Clear input on successful submit
     inputText.value = ''
     validationError.value = ''
 
@@ -141,7 +138,6 @@ function handleClear() {
   emit('clear')
 }
 
-// Focus input method (exposed for parent components)
 function focus() {
   const fieldElement = document.querySelector('.van-field__control')
   if (fieldElement) {

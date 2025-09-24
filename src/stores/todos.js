@@ -10,23 +10,33 @@ export const useTodoStore = defineStore('todos', () => {
   // State
   const todos = ref([])
   const currentFilter = ref(TODO_FILTERS.ALL)
+  const searchQuery = ref('')
   const isLoading = ref(false)
   const error = ref(null)
 
-  // Debounced save function to prevent excessive localStorage writes
   const debouncedSave = debounce(() => {
     StorageService.saveTodos(todos.value)
   }, 300)
-
+   
   // Computed
   const filteredTodos = computed(() => {
+    let filtered = todos.value
+    if (searchQuery.value.data?.trim()) {
+
+      const query = searchQuery.value.data.toLowerCase()?.trim()
+      
+      filtered = filtered.filter(todo =>
+        todo.text.toLowerCase().includes(query)
+      )
+    }
+
     switch (currentFilter.value) {
       case TODO_FILTERS.ACTIVE:
-        return todos.value.filter(todo => !todo.completed)
+        return filtered.filter(todo => !todo.completed)
       case TODO_FILTERS.COMPLETED:
-        return todos.value.filter(todo => todo.completed)
+        return filtered.filter(todo => todo.completed)
       default:
-        return todos.value
+        return filtered
     }
   })
 
@@ -181,6 +191,19 @@ export const useTodoStore = defineStore('todos', () => {
     return updateTodo(id, { completed: !todo.completed })
   }
 
+
+  /**
+   * Search todos by text
+   */
+  function searchTodos(query) {
+    searchQuery.value = query || ''
+    error.value = null
+    return { success: true, query: searchQuery.value }
+  }
+
+ 
+
+
   /**
    * Clear all completed todos
 
@@ -298,6 +321,7 @@ export const useTodoStore = defineStore('todos', () => {
     // State
     todos: readonly(todos),
     currentFilter: readonly(currentFilter),
+    searchQuery: readonly(searchQuery),
     isLoading: readonly(isLoading),
     error: readonly(error),
 
@@ -320,6 +344,7 @@ export const useTodoStore = defineStore('todos', () => {
     setFilter,
     clearAllTodos,
     importTodos,
-    clearError
+    clearError,
+    searchTodos
   }
 })

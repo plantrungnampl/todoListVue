@@ -109,30 +109,29 @@ const emit = defineEmits([
   'clear-all',
   'import-todos'
 ])
-
 // Refs
 const fileInput = ref(null)
 
 // Methods
-async function handleToggleAll() {
+function handleToggleAll() {
   try {
-    await emit('toggle-all')
+    emit('toggle-all')
   } catch (error) {
     console.error('Error toggling all todos:', error)
   }
 }
 
-async function handleClearCompleted() {
+function handleClearCompleted() {
   try {
-    await emit('clear-completed')
+    emit('clear-completed')
   } catch (error) {
     console.error('Error clearing completed todos:', error)
   }
 }
 
-async function handleClearAll() {
+function handleClearAll() {
   try {
-    await emit('clear-all')
+    emit('clear-all')
   } catch (error) {
     console.error('Error clearing all todos:', error)
   }
@@ -209,7 +208,7 @@ async function handleImport(event) {
     const importResult = importTodos(fileContent)
 
     if (importResult.success) {
-      await emit('import-todos', importResult.todos)
+      emit('import-todos', importResult.todos)
     } else {
       showToast({
         type: 'fail',

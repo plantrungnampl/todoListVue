@@ -104,7 +104,7 @@ const completionPercentage = computed(() => {
   return Math.round((props.completedCount / props.totalCount) * 100)
 })
 
-// Watch for prop changes
+
 watch(() => props.currentFilter, (newFilter) => {
   activeTab.value = newFilter
 })

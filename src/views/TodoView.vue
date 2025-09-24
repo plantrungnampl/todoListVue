@@ -8,15 +8,30 @@
       </h1>
     </div>
 
+
     <!-- Input section -->
     <TodoInput
       ref="todoInputRef"
       :disabled="isLoading"
       @submit="handleAddTodo"
     />
+    <!-- Search Input -->
+    <div class="search-container">
+      <van-field
+        placeholder="Tìm kiếm todos..."
+        clearable
+        @input="handleSearchTodos"
+        @clear="handleSearchTodos('')"
+      >
+        <template #left-icon>
+          <van-icon name="search" />
+        </template>
+      </van-field>
+    </div>
 
-    <!-- Filters and Stats -->
-    <TodoFilters
+
+      <!-- Filters and Stats -->
+      <TodoFilters
       :current-filter="currentFilter"
       :total-count="totalCount"
       :active-count="activeCount"
@@ -109,7 +124,6 @@ import TodoInput from '@/components/TodoInput.vue'
 import TodoItem from '@/components/TodoItem.vue'
 import TodoFilters from '@/components/TodoFilters.vue'
 import TodoActions from '@/components/TodoActions.vue'
-
 // Composables
 const {
   todos,
@@ -119,6 +133,7 @@ const {
   hasCompleted,
   allCompleted,
   currentFilter,
+  searchQuery,
   isLoading,
   error,
   addTodo,
@@ -130,7 +145,8 @@ const {
   setFilter,
   clearAllTodos,
   importTodos,
-  clearError
+  clearError,
+  searchTodos,
 } = useTodos()
 
 // Refs
@@ -173,15 +189,12 @@ const emptyStateAction = computed(() => {
 })
 
 const todosForExport = computed(() => {
-  // Return all todos for export, not just filtered ones
   return todos.value
 })
 
-// Methods
 async function handleAddTodo(text) {
   const success = await addTodo(text)
   if (success) {
-    // Auto-switch to 'all' filter after adding if currently showing completed
     if (currentFilter.value === TODO_FILTERS.COMPLETED) {
       setFilter(TODO_FILTERS.ALL)
     }
@@ -211,7 +224,9 @@ async function handleToggleAll() {
 async function handleClearAll() {
   await clearAllTodos()
 }
-
+function handleSearchTodos(query) {
+  searchTodos(query)
+}
 async function handleImportTodos(importedTodos) {
   await importTodos(importedTodos)
 }
@@ -240,10 +255,8 @@ function focusInput() {
 
 
 
-// Lifecycle
 onMounted(() => {
   clearError()
-  // Focus input on load for better UX
   setTimeout(() => {
     focusInput()
   }, 100)
@@ -259,7 +272,7 @@ defineExpose({
 
 <style scoped>
 .todo-view {
-  max-width: 600px;
+  max-width: 900px;
   margin: 0 auto;
   background-color: #fff;
   min-height: 100vh;
@@ -285,6 +298,18 @@ defineExpose({
 
 .todo-title .van-icon {
   font-size: 32px;
+}
+
+.search-container {
+  padding: 0 16px 16px 16px;
+  background-color: #fff;
+  border-bottom: 1px solid #ebedf0;
+}
+
+.search-container .van-field {
+  background-color: #f7f8fa;
+  border-radius: 8px;
+  padding: 8px 12px;
 }
 
 .main-loading {

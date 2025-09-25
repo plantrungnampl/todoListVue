@@ -17,14 +17,14 @@ export const useTodoStore = defineStore('todos', () => {
   const debouncedSave = debounce(() => {
     StorageService.saveTodos(todos.value)
   }, 300)
-   
+
   // Computed
   const filteredTodos = computed(() => {
     let filtered = todos.value
     if (searchQuery.value.data?.trim()) {
 
       const query = searchQuery.value.data.toLowerCase()?.trim()
-      
+
       filtered = filtered.filter(todo =>
         todo.text.toLowerCase().includes(query)
       )
@@ -201,12 +201,8 @@ export const useTodoStore = defineStore('todos', () => {
     return { success: true, query: searchQuery.value }
   }
 
- 
-
-
   /**
    * Clear all completed todos
-
    */
   function clearCompleted() {
     try {

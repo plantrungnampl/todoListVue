@@ -13,7 +13,8 @@
     <TodoInput
       ref="todoInputRef"
       :disabled="isLoading"
-      @submit="handleAddTodo"
+      @submita="handleAddTodo"
+      
     />
     <!-- Search Input -->
     <div class="search-container">
@@ -28,7 +29,6 @@
         </template>
       </van-field>
     </div>
-
 
       <!-- Filters and Stats -->
       <TodoFilters
@@ -114,6 +114,8 @@
       @click="focusInput"
     />
   </div>
+  <div>
+  </div>
 </template>
 
 <script setup>
@@ -149,7 +151,7 @@ const {
   searchTodos,
 } = useTodos()
 
-// Refs
+// Refs state
 const todoInputRef = ref(null)
 const editingTodoId = ref(null)
 
@@ -173,7 +175,7 @@ const emptyStateDescription = computed(() => {
   switch (currentFilter.value) {
     case TODO_FILTERS.ACTIVE:
       return totalCount.value > 0
-        ? 'Tuyệt vời! Tất cả todo đã hoàn thành'
+        ? 'Tất cả todo đã hoàn thành'
         : 'Chưa có todo nào được tạo'
     case TODO_FILTERS.COMPLETED:
       return 'Chưa có todo nào được hoàn thành'
@@ -252,8 +254,6 @@ function focusInput() {
     }
   })
 }
-
-
 
 onMounted(() => {
   clearError()

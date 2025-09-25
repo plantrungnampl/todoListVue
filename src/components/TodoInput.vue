@@ -61,7 +61,7 @@ const props = defineProps({
 })
 
 // Emits
-const emit = defineEmits(['submit', 'clear', 'input'])
+const emit = defineEmits(['submita', 'clear', 'input'])
 
 // State
 const inputText = ref(props.initialValue)
@@ -119,7 +119,7 @@ function handleInput(value) {
   try {
     isSubmitting.value = true
 
-     emit('submit', trimmedText)
+     emit('submita', trimmedText)
 
     inputText.value = ''
     validationError.value = ''

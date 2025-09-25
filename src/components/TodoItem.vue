@@ -66,7 +66,6 @@
             type="default"
             size="mini"
             icon="edit"
-            text="edit"
             @click.stop="startEditing"
           />
       </template>

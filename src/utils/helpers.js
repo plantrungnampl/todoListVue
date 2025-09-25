@@ -4,7 +4,8 @@
 
  */
 export function generateId() {
-  return Date.now().toString(36) + Math.random().toString(36).substr(2)
+  // return Date.now().toString(36) + Math.random().toString(36).substring(2)
+  return `${Date.now()}-${Math.random().toString(36).substring(2)}-${performance.now()}`
 }
 
 /**
@@ -60,7 +61,7 @@ export function formatRelativeTime(date) {
 }
 
 /**
- * Debounce function
+ * Debounce function for performences 
 
  */
 export function debounce(func, wait) {
@@ -100,7 +101,7 @@ export function exportTodos(todos) {
   const exportData = {
     todos,
     exportedAt: new Date().toISOString(),
-    version: '1.0.0'
+    version: '36'
   }
   return JSON.stringify(exportData, null, 2)
 }
